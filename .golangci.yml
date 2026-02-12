@@ -1,0 +1,34 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  default: none
+  enable:
+    - bodyclose
+    - errcheck
+    - copyloopvar
+    - gocritic
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - staticcheck
+    - unconvert
+    - unused
+    - whitespace
+  settings:
+    govet:
+      enable-all: false
+      disable:
+        - fieldalignment
+    gosec:
+      excludes:
+        - G204
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - gosec

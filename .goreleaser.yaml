@@ -1,3 +1,4 @@
+version: 2
 project_name: cc-flavors
 
 builds:
@@ -17,7 +18,8 @@ before:
     - go test ./...
 
 archives:
-  - format: tar.gz
+  - formats:
+      - tar.gz
     name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
     files:
       - LICENSE
@@ -37,6 +39,9 @@ signs:
       - --output-signature
       - ${signature}
       - ${artifact}
+
+sboms:
+  - artifacts: archive
 
 release:
   github:

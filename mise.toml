@@ -1,0 +1,30 @@
+[tools]
+go = "latest"
+goreleaser = "latest"
+cosign = "latest"
+golangci-lint = "latest"
+lefthook = "latest"
+
+[tasks.build]
+run = "goreleaser build --single-target --snapshot --output cc-flavors --clean"
+
+[tasks.test]
+run = "go test ./..."
+
+[tasks.fmt]
+run = "gofmt -w ."
+
+[tasks.lint]
+run = "golangci-lint run ./..."
+
+[tasks.clean]
+run = "rm -rf cc-flavors dist"
+
+[tasks.all]
+run = ["mise run fmt", "mise run lint", "mise run test", "mise run build"]
+
+[tasks.hooks]
+run = "lefthook install"
+
+[tasks.release]
+run = "goreleaser release --clean"

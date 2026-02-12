@@ -1,0 +1,11 @@
+commit-msg:
+  commands:
+    commitlint:
+      run: scripts/commit-msg.sh {1}
+
+pre-commit:
+  commands:
+    fmt:
+      run: gofmt -w {staged_files}
+    lint:
+      run: golangci-lint run --new-from-rev=HEAD --fix=false

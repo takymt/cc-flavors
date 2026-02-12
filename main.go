@@ -38,7 +38,9 @@ func main() {
 
 func run(args []string, stdin io.Reader, stderr io.Writer) error {
 	if len(args) == 0 {
-		printUsage(stderr)
+		if err := printUsage(stderr); err != nil {
+			return err
+		}
 		return nil
 	}
 
@@ -50,13 +52,16 @@ func run(args []string, stdin io.Reader, stderr io.Writer) error {
 		}
 		return runIngest(cfg, stdin)
 	default:
-		printUsage(stderr)
+		if err := printUsage(stderr); err != nil {
+			return err
+		}
 		return nil
 	}
 }
 
-func printUsage(w io.Writer) {
-	fmt.Fprintln(w, "usage: cc-flavors ingest [--db <path>]")
+func printUsage(w io.Writer) error {
+	_, err := fmt.Fprintln(w, "usage: cc-flavors ingest [--db <path>]")
+	return err
 }
 
 func parseIngestFlags(args []string) (ingestConfig, error) {
@@ -73,7 +78,7 @@ func parseIngestFlags(args []string) (ingestConfig, error) {
 	return cfg, nil
 }
 
-func runIngest(cfg ingestConfig, stdin io.Reader) error {
+func runIngest(cfg ingestConfig, stdin io.Reader) (err error) {
 	dbPath := cfg.dbPath
 	if dbPath == "" {
 		var err error
@@ -83,7 +88,7 @@ func runIngest(cfg ingestConfig, stdin io.Reader) error {
 		}
 	}
 
-	if err := os.MkdirAll(filepath.Dir(dbPath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(dbPath), 0o750); err != nil {
 		return err
 	}
 
@@ -91,7 +96,11 @@ func runIngest(cfg ingestConfig, stdin io.Reader) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer func() {
+		if closeErr := db.Close(); closeErr != nil && err == nil {
+			err = closeErr
+		}
+	}()
 
 	if err := ensureSchema(db); err != nil {
 		return err
@@ -104,7 +113,11 @@ func runIngest(cfg ingestConfig, stdin io.Reader) error {
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
+	defer func() {
+		if closeErr := stmt.Close(); closeErr != nil && err == nil {
+			err = closeErr
+		}
+	}()
 
 	counts := map[string]int{}
 	scanner := bufio.NewScanner(stdin)
