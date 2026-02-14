@@ -43,13 +43,16 @@ func main() {
 
 func run(args []string, stdin io.Reader, stderr io.Writer) error {
 	if len(args) == 0 {
-		if err := printUsage(stderr); err != nil {
+		cfg, err := parseSummaryFlags(nil)
+		if err != nil {
 			return err
 		}
-		return nil
+		return runSummary(cfg, os.Stdout)
 	}
 
 	switch args[0] {
+	case "-h", "--help", "help":
+		return printUsage(stderr)
 	case "--version", "-V", "version":
 		return printVersion(os.Stdout)
 	case "ingest":
@@ -73,7 +76,7 @@ func run(args []string, stdin io.Reader, stderr io.Writer) error {
 }
 
 func printUsage(w io.Writer) error {
-	usage := `usage: cc-flavors <command> [options]
+	usage := `usage: cc-flavors [command] [options]
 
 commands:
   ingest  read from stdin and store counts
@@ -81,6 +84,9 @@ commands:
   version  print version
 
 options:
+  -h, --help  show help
+  -V, --version  print version
+
   --db <path>  sqlite db path (default: $XDG_DATA_HOME/cc-flavors/events.sqlite)`
 	_, err := fmt.Fprintln(w, usage)
 	return err
