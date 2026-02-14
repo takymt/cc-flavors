@@ -26,7 +26,7 @@ jobs:
           test -z "$(gofmt -l .)"
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v9
         with:
           version: v2.9.0
 
