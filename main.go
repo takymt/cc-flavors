@@ -55,6 +55,12 @@ func run(args []string, stdin io.Reader, stderr io.Writer) error {
 		return printUsage(stderr)
 	case "--version", "-V", "version":
 		return printVersion(os.Stdout)
+	case "clear":
+		cfg, err := parseClearFlags(args[1:])
+		if err != nil {
+			return err
+		}
+		return runClear(cfg, os.Stdin, os.Stderr)
 	case "ingest":
 		cfg, err := parseIngestFlags(args[1:])
 		if err != nil {
@@ -82,6 +88,7 @@ commands:
   ingest  read from stdin and store counts
   summary  print aggregated counts
   version  print version
+  clear  delete all stored counts
 
 options:
   -h, --help  show help
@@ -90,6 +97,57 @@ options:
   --db <path>  sqlite db path (default: $XDG_DATA_HOME/cc-flavors/events.sqlite)`
 	_, err := fmt.Fprintln(w, usage)
 	return err
+}
+
+type clearConfig struct {
+	dbPath string
+	yes    bool
+}
+
+func parseClearFlags(args []string) (clearConfig, error) {
+	fs := flag.NewFlagSet("clear", flag.ContinueOnError)
+	fs.SetOutput(io.Discard)
+
+	cfg := clearConfig{}
+	fs.StringVar(&cfg.dbPath, "db", "", "path to sqlite db")
+	fs.BoolVar(&cfg.yes, "yes", false, "skip confirmation")
+
+	if err := fs.Parse(args); err != nil {
+		return cfg, err
+	}
+	return cfg, nil
+}
+
+func runClear(cfg clearConfig, stdin io.Reader, stderr io.Writer) error {
+	dbPath := cfg.dbPath
+	if dbPath == "" {
+		var err error
+		dbPath, err = defaultDBPath()
+		if err != nil {
+			return err
+		}
+	}
+
+	if !cfg.yes {
+		fmt.Fprintf(stderr, "Delete all stored counts at %s? [y/N]: ", dbPath)
+		reader := bufio.NewReader(stdin)
+		line, err := reader.ReadString('\n')
+		if err != nil && err != io.EOF {
+			return err
+		}
+		answer := strings.TrimSpace(strings.ToLower(line))
+		if answer != "y" && answer != "yes" {
+			return nil
+		}
+	}
+
+	if err := os.Remove(dbPath); err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
 
 func printVersion(w io.Writer) error {
