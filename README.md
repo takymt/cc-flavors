@@ -10,7 +10,15 @@ It ships as a single Go binary and a tiny tmux hook.
 
 ## Install
 
-### TPM
+### Quick start (recommended)
+
+1. Install the binary:
+
+```
+go install github.com/takuto-yamamoto/cc-flavors@latest
+```
+
+2. Install the tmux plugin (TPM):
 
 Add to `.tmux.conf`:
 
@@ -21,7 +29,13 @@ run '~/.tmux/plugins/tpm/tpm'
 
 Reload tmux, then press `prefix + I` to install.
 
-### Manual
+### Alternative install
+
+#### Binary via tar.gz
+
+Download the release archive for your platform, then put `cc-flavors` on `PATH`.
+
+#### tmux plugin (manual)
 
 ```bash
 git clone https://github.com/takuto-yamamoto/cc-flavors.git ~/.tmux/plugins/cc-flavors
