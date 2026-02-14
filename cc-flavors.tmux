@@ -3,7 +3,7 @@ set -eu
 
 tmux set-option -gqo @cc_flavors_cmd "claude"
 tmux set-option -gqo @cc_flavors_hook_index "99"
-tmux set-option -gqo @cc_flavors_scan_interval "5"
+tmux set-option -gqo @cc_flavors_scan_interval "1"
 
 script_dir="$(cd -- "$(dirname -- "$0")" && pwd)"
 if ! command -v cc-flavors >/dev/null 2>&1; then
@@ -17,4 +17,8 @@ if [ -z "$hook_index" ]; then
 fi
 
 tmux set-hook -g "client-attached[$hook_index]" \
-  "run-shell '$script_dir/scripts/scan.sh'"
+  "run-shell -b '$script_dir/scripts/scan.sh'"
+
+# Start once on source to avoid missing the first attach.
+# scan.sh uses a PID lock, so this won't double-run.
+tmux run-shell -b "$script_dir/scripts/scan.sh"

@@ -58,7 +58,7 @@ capture_flavor() {
   last_file="$data_dir/last_${pane_key}"
 
   text="$(tmux capture-pane -p -t "$pane_id" -S -100)"
-  match="$(printf "%s\n" "$text" | tr '\r' '\n' | grep -Eo '[A-Z][A-Za-z]*ing…' | tail -n 1)"
+  match="$(printf "%s\n" "$text" | tr '\r' '\n' | sed -E 's/\x1b\[[0-9;?]*[a-zA-Z]//g' | grep -Eo '[A-Z][A-Za-z]*ing…' | tail -n 1)"
   if [ -z "$match" ]; then
     return 0
   fi
