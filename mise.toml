@@ -26,5 +26,8 @@ run = ["mise run fmt", "mise run lint", "mise run test", "mise run build"]
 [tasks.hooks]
 run = "lefthook install"
 
-[tasks.release]
-run = "goreleaser release --clean"
+[tasks.bump]
+run = "scripts/bump.sh"
+
+[tasks.version]
+run = "scripts/version.sh"
