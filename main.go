@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -49,6 +50,8 @@ func run(args []string, stdin io.Reader, stderr io.Writer) error {
 	}
 
 	switch args[0] {
+	case "--version", "-V", "version":
+		return printVersion(os.Stdout)
 	case "ingest":
 		cfg, err := parseIngestFlags(args[1:])
 		if err != nil {
@@ -75,11 +78,26 @@ func printUsage(w io.Writer) error {
 commands:
   ingest  read from stdin and store counts
   summary  print aggregated counts
+  version  print version
 
 options:
   --db <path>  sqlite db path (default: $XDG_DATA_HOME/cc-flavors/events.sqlite)`
 	_, err := fmt.Fprintln(w, usage)
 	return err
+}
+
+func printVersion(w io.Writer) error {
+	version := buildVersion()
+	_, err := fmt.Fprintln(w, version)
+	return err
+}
+
+func buildVersion() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok || info.Main.Version == "" || info.Main.Version == "(devel)" {
+		return "0.0.0"
+	}
+	return strings.TrimPrefix(info.Main.Version, "v")
 }
 
 func parseIngestFlags(args []string) (ingestConfig, error) {
