@@ -1,10 +1,11 @@
 # cc-flavors
 
-`cc-flavors` collects "flavor texts" shown by Claude Code (e.g. `Moonwalking…`).
+![CI](https://github.com/takuto-yamamoto/cc-flavors/actions/workflows/ci.yml/badge.svg)
+![License](https://img.shields.io/github/license/takuto-yamamoto/cc-flavors)
 
-It ships as a single Go binary and a tiny tmux hook.
+![Demo Screenshot](docs/demo.png)
 
-[[Add demo here]]
+> Tiny **tmux hook** that Collects "flavor texts" shown by Claude Code (e.g. `Moonwalking…`).
 
 ## Install
 
