@@ -16,8 +16,6 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	defer os.RemoveAll(tmpDir)
-
 	testBinary = filepath.Join(tmpDir, "cc-flavors")
 	cmd := exec.Command("go", "build", "-o", testBinary, ".")
 	cmd.Stdout = os.Stdout
@@ -25,8 +23,11 @@ func TestMain(m *testing.M) {
 	if err := cmd.Run(); err != nil {
 		panic(err)
 	}
-
-	os.Exit(m.Run())
+	code := m.Run()
+	if err := os.RemoveAll(tmpDir); err != nil {
+		panic(err)
+	}
+	os.Exit(code)
 }
 
 func runCLI(t *testing.T, input string, args ...string) (string, string) {
