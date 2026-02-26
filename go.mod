@@ -2,7 +2,7 @@ module github.com/takymt/cc-flavors
 
 go 1.26.0
 
-require modernc.org/sqlite v1.45.0
+require modernc.org/sqlite v1.46.1
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
