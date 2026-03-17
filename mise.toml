@@ -1,6 +1,6 @@
 [tools]
 go = "1.26.1"
-golangci-lint = "2.9.0"
+golangci-lint = "2.11.3"
 lefthook = "2.1.4"
 
 [tasks.build]
