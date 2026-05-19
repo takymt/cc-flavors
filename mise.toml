@@ -1,7 +1,7 @@
 [tools]
 go = "1.26.3"
 golangci-lint = "2.9.0"
-lefthook = "2.1.6"
+lefthook = "2.1.8"
 
 [tasks.build]
 run = "go build -o cc-flavors ."
